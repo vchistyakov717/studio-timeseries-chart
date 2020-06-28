@@ -1,29 +1,33 @@
 import React, { useState } from "react";
 import moment from "moment";
 import "chartjs-plugin-annotation";
+import deepcopy from "deepcopy";
 
 import StudioChart from "./StudioChart";
 import "./plugins/autoConfigPlugin";
 
-const buildMinMaxAnnotation = (datasets) => {
+const buidMaxAnnotations = (datasets) => {
   let dates = [];
   let values = [];
   var colors = [];
 
   datasets.forEach((set) => {
+    let length = 1;
     if (!set.showMaxLine) return;
-    var lowest = set.data[0];
-    var highest = set.data[0];
-
-    var tmp;
-    for (var i = set.data.length - 1; i >= 0; i--) {
-      tmp = set.data[i];
-      if (parseFloat(tmp.y) < parseFloat(lowest.y)) lowest = tmp;
-      if (parseFloat(tmp.y) > parseFloat(highest.y)) highest = tmp;
+    //deep copy dataset object
+    const set_copy = deepcopy(set);
+    //sort data array
+    set_copy.data.sort((a, b) => (parseFloat(a.y) < parseFloat(b.y) ? 1 : -1));
+    const highest = set_copy.data[0];
+    //count dataset objects with max y value
+    for (let i = 1; i < set_copy.data.length; i++) {
+      if (parseFloat(set_copy.data[i].y) === parseFloat(highest.y)) length++;
+      else break;
     }
-    if (highest) {
-      dates.push(highest.t);
-      values.push(parseFloat(highest.y));
+    //populate annotation arrays
+    for (let j = 0; j < length; j++) {
+      dates.push(set_copy.data[j].t);
+      values.push(parseFloat(set_copy.data[j].y));
       colors.push(set.borderColor);
     }
   });
@@ -158,7 +162,7 @@ const buildConfig = (datasets, height, yAxisLabel) => {
       },
       annotation: {
         drawTime: "afterDatasetsDraw",
-        annotations: buildMinMaxAnnotation(datasets),
+        annotations: buidMaxAnnotations(datasets),
       },
       tooltips: {
         intersect: false,

@@ -103,6 +103,25 @@ class App extends React.Component {
       },
     ];
 
+    // const dataSet = {
+    //   key: 'set1',
+    //   showMaxLine: true,
+    //   data: [{
+    //     value: 2,
+    //     timestamp: 100001
+    //   }, {
+    //     value: 7,
+    //     timestamp: 100002
+    //   }, {
+    //     value: 7,
+    //     timestamp: 100003
+    //   }, {
+    //     value: 6,
+    //     timestamp: 100004
+    //   }]
+    // };
+    // const dataSets = [ dataSet ];
+
     return (
       <StudioTimeSeriesChart
         datasets={datasets}
