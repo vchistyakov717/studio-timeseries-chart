@@ -28,7 +28,7 @@ const buidMaxAnnotations = (datasets) => {
     for (let j = 0; j < length; j++) {
       dates.push(set_copy.data[j].t);
       values.push(parseFloat(set_copy.data[j].y));
-      colors.push(set.borderColor);
+      colors.push(set_copy.borderColor ? set_copy.borderColor : set_copy.color);
     }
   });
 
@@ -106,6 +106,7 @@ const renameKey = (obj, newKey, oldKey) => {
 };
 
 const buildConfig = (datasets, height, yAxisLabel) => {
+  if (!datasets) return null;
   datasets.forEach((set) => {
     const data = set.data;
     if (set.key) {
@@ -189,7 +190,7 @@ const StudioTimeSeriesChart = (props) => {
     buildConfig(props.datasets, props.height, props.yAxisLabel)
   );
 
-  return <StudioChart config={config} />;
+  return <StudioChart config={config ? config : props.config} />;
 };
 
 export default StudioTimeSeriesChart;
