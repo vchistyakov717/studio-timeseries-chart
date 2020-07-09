@@ -6,6 +6,20 @@ import deepcopy from "deepcopy";
 import StudioChart from "./StudioChart";
 import "./plugins/autoConfigPlugin";
 
+const getMaxY = (datasets) => {
+  let globalMax = null;
+  datasets.forEach((set) => {
+    const data = set.data;
+    const dataMax = data.reduce(
+      (max, p) => (parseFloat(p.y) > max ? parseFloat(p.y) : max),
+      data[0].y
+    );
+    if (!globalMax) globalMax = dataMax;
+    if (dataMax > globalMax) globalMax = dataMax;
+  });
+  return globalMax + globalMax / 100;
+};
+
 const buidMaxAnnotations = (datasets) => {
   let dates = [];
   let values = [];
@@ -151,6 +165,9 @@ const buildConfig = (datasets, height, yAxisLabel) => {
         xAxes: buildDefaultXAxis(),
         yAxes: [
           {
+            ticks: {
+              suggestedMax: getMaxY(datasets),
+            },
             gridLines: {
               drawBorder: false,
             },
