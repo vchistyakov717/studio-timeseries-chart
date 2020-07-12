@@ -1,17 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import Example_00 from "./examples/example_00";
-import Example_001 from "./examples/example_001";
+import Example00 from "./examples/example_00";
+import Example001 from "./examples/example_001";
 
-import Example_01 from "./examples/example_01";
-import Example_011 from "./examples/example_011";
-import Example_012 from "./examples/example_012";
-import Example_013 from "./examples/example_013";
+import Example01 from "./examples/example_01";
+import Example011 from "./examples/example_011";
+import Example012 from "./examples/example_012";
+import Example013 from "./examples/example_013";
 
-import Example_02 from "./examples/example_02";
-import Example_03 from "./examples/example_03";
-import Example_04 from "./examples/example_04";
+import Example02 from "./examples/example_02";
+import Example03 from "./examples/example_03";
+import Example04 from "./examples/example_04";
+import Example05 from "./examples/example_05";
 
 // import ComparisionPerPeriod from "./examples/comparision";
 
@@ -20,52 +21,57 @@ const routes = [
     path: '/',
     exact: true,
     sidebar: () => <div>Example 0</div>,
-    main: () => <Example_00/>,
+    main: () => <Example00/>,
   },
   {
     path: '/custom_color',
     exact: true,
     sidebar: () => <div>Example 0.1</div>,
-    main: () => <Example_001/>,
+    main: () => <Example001/>,
   },
   {
     path: '/lines',
     exact: true,
     sidebar: () => <div>Example 1</div>,
-    main: () => <Example_01/>,
+    main: () => <Example01/>,
   },
   {
     path: '/area',
     exact: true,
     sidebar: () => <div>Example 1.1</div>,
-    main: () => <Example_011/>,
+    main: () => <Example011/>,
   },
   {
     path: '/area_opacity',
     exact: true,
     sidebar: () => <div>Example 1.2</div>,
-    main: () => <Example_012/>,
+    main: () => <Example012/>,
   },
   {
     path: '/max_lines',
     exact: true,
     sidebar: () => <div>Example 1.3</div>,
-    main: () => <Example_013/>,
+    main: () => <Example013/>,
   },
   {
     path: '/basic',
     sidebar: () => <div>Example 2</div>,
-    main: () => <Example_02/>,
+    main: () => <Example02/>,
   },
   {
     path: '/colors',
     sidebar: () => <div>Example 3</div>,
-    main: () => <Example_03/>,
+    main: () => <Example03/>,
   },
   {
     path: '/config',
     sidebar: () => <div>Example 4</div>,
-    main: () => <Example_04/>,
+    main: () => <Example04/>,
+  },
+  {
+    path: '/test',
+    sidebar: () => <div>Example 5</div>,
+    main: () => <Example05/>,
   },
   // {
   //   path: '/comparision',
@@ -96,6 +102,7 @@ class App extends React.Component {
               <li><Link to='/basic'>Example 2</Link></li>
               <li><Link to='/colors'>Example 3</Link></li>
               <li><Link to='/config'>Example 4</Link></li>
+              <li><Link to='/test'>Example 5</Link></li>
               {/* <li><Link to='/comparision'>Period&nbsp;Comparision</Link></li> */}
             </ul>
 

@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 
-import { generateData } from "./helpers";
 import StudioTimeSeriesChart from "../lib/StudioTimeSeriesChart";
 
 class Example_03 extends React.Component {

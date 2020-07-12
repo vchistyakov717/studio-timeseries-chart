@@ -44,16 +44,16 @@ export function generateData(num, start) {
     data.length < num && date.isBefore(now);
     date = date.clone().add(1, unit).startOf(unit)
   ) {
-    if (outsideMarketHours(date)) {
-      if (!lessThanDay || !beforeNineThirty(date)) {
-        date = date
-          .clone()
-          .add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, "day");
-      }
-      if (lessThanDay) {
-        date = date.hour(9).minute(30).second(0);
-      }
-    }
+    // if (outsideMarketHours(date)) {
+    //   if (!lessThanDay || !beforeNineThirty(date)) {
+    //     date = date
+    //       .clone()
+    //       .add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, "day");
+    //   }
+    //   if (lessThanDay) {
+    //     date = date.hour(9).minute(30).second(0);
+    //   }
+    // }
     data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
   }
   return data;
