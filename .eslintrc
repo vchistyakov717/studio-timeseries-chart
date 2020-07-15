@@ -1,0 +1,3 @@
+{
+    "extends": ["@brightcove/eslint-config-applications", "@brightcove/eslint-config-applications/react"]
+}

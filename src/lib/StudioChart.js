@@ -1,11 +1,13 @@
-import React from "react";
+/*jshint esversion: 6 */
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import Chart from "./Chart";
+import Chart from './Chart';
 
 const configValidation = (config) => {
-  let validConfig = config;
+  const validConfig = config;
 
-  if (!config.type) validConfig.type = "line";
+  if (!config.type) validConfig.type = 'line';
 
   return validConfig;
 };
@@ -13,16 +15,26 @@ const configValidation = (config) => {
 const StudioChart = (props) => {
   const config = props.config;
 
+  /* jshint ignore:start */
   return (
     <div
       style={{
         height: config.height ? config.height : props.height,
-        position: "relative",
+        position: 'relative',
       }}
     >
       <Chart config={configValidation(config)} />
     </div>
   );
+  /* jshint ignore:end */
+};
+
+StudioChart.propTypes = {
+  height: PropTypes.PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  config: PropTypes.object
 };
 
 StudioChart.defaultProps = {

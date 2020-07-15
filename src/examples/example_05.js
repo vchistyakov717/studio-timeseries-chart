@@ -1,46 +1,47 @@
-import React, { Fragment } from "react";
+/*jshint esversion: 6 */
+import React, { Fragment } from 'react';
 
-import { generateData } from "./helpers";
-import StudioTimeSeriesChart from "../lib/StudioTimeSeriesChart";
+import { generateData } from './helpers';
+import StudioTimeSeriesChart from '../lib/StudioTimeSeriesChart';
 
 class Example_05 extends React.Component {
-  render() {
+  render () {
     const datasets = [
       {
-        key: "Navy Dark",
-        data: generateData(7, "Jan 08 1990"),
-        color: "#030d28",
+        key: 'Navy Dark',
+        data: generateData(7, 'Jan 08 1990'),
+        color: '#030d28',
       },
       {
-        key: "Bar",
-        color: "#8e9093",
-        data: generateData(7, "Jan 01 1990"),
-        type: "bar",
+        key: 'Bar',
+        color: '#8e9093',
+        data: generateData(7, 'Jan 01 1990'),
+        type: 'bar',
       },
     ];
 
     const displayConfig = [
       {
-        key: "Navy Dark",
-        data: generateData(0, "Jan 01 1990"),
-        color: "#030d28",
+        key: 'Navy Dark',
+        data: generateData(0, 'Jan 01 1990'),
+        color: '#030d28',
       },
       {
-        key: "Bar",
-        color: "#8e9093",
-        data: generateData(0, "Jan 01 1990"),
-        type: "bar",
+        key: 'Bar',
+        color: '#8e9093',
+        data: generateData(0, 'Jan 01 1990'),
+        type: 'bar',
       },
     ];
-
+    /* jshint ignore:start */
     return (
       <Fragment>
         <StudioTimeSeriesChart
           datasets={datasets}
           height={500}
-          yAxisLabel="test"
+          yAxisLabel='test'
           comparePeriods={true}
-          category="week"
+          category='week'
         />
         <div style={{ paddingLeft: 30, paddingTop: 30 }}>
           <h2>
@@ -49,12 +50,13 @@ class Example_05 extends React.Component {
             (Period-per-Period comparison)
             </span>
           </h2>
-          <pre style={{ color: "black", fontSize: 16 }}>
+          <pre style={{ color: 'black', fontSize: 16 }}>
             {JSON.stringify(displayConfig, null, 2)}
           </pre>
         </div>
       </Fragment>
     );
+    /* jshint ignore:end */
   }
 }
 

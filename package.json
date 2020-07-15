@@ -7,6 +7,8 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "cra-template": "1.0.3",
     "deepcopy": "^2.0.0",
+    "eslint": "^7.4.0",
+    "eslint-plugin-react": "^7.20.3",
     "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "react": "^16.13.1",
@@ -34,5 +36,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@brightcove/eslint-config-applications": "git+ssh://git@bithub.brightcove.com:applications/eslint-config-brightcove-applications.git#v0.3.0"
   }
 }

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import moment from "moment";
-import "chartjs-plugin-annotation";
-import deepcopy from "deepcopy";
+/*jshint esversion: 6 */
+import React, { useState } from 'react';
+import moment from 'moment';
+import 'chartjs-plugin-annotation';
+import deepcopy from 'deepcopy';
+import PropTypes from 'prop-types';
 
-import StudioChart from "./StudioChart";
-import "./plugins/autoConfigPlugin";
+import StudioChart from './StudioChart';
+import './plugins/autoConfigPlugin';
 
 const getMaxY = (datasets) => {
   let globalMax = null;
@@ -13,7 +15,7 @@ const getMaxY = (datasets) => {
     let dataMax = null;
     if (
       !data.some((value) => {
-        return typeof value == "object";
+        return typeof value === 'object';
       })
     ) {
       dataMax = Math.max(...data);
@@ -30,9 +32,9 @@ const getMaxY = (datasets) => {
 };
 
 const buidMaxAnnotations = (datasets) => {
-  let dates = [];
-  let values = [];
-  var colors = [];
+  const dates = [];
+  const values = [];
+  const colors = [];
 
   datasets.forEach((set) => {
     let length = 1;
@@ -57,16 +59,16 @@ const buidMaxAnnotations = (datasets) => {
 
   return dates.map(function (date, index) {
     return {
-      type: "line",
-      id: "vline" + index,
-      mode: "vertical",
-      scaleID: "x-axis-0",
+      type: 'line',
+      id: 'vline' + index,
+      mode: 'vertical',
+      scaleID: 'x-axis-0',
       value: date,
       borderColor: colors[index],
       borderWidth: 1,
       label: {
         enabled: true,
-        position: "top",
+        position: 'top',
         content: values[index],
       },
     };
@@ -74,16 +76,16 @@ const buidMaxAnnotations = (datasets) => {
 };
 
 const buildTicks = (scale, ticks) => {
-  var majorUnit = scale._majorUnit;
-  var firstTick = ticks[0];
-  var i, ilen, val, tick, currMajor, lastMajor;
+  const majorUnit = scale._majorUnit;
+  const firstTick = ticks[0];
+  let i, ilen, val, tick, currMajor, lastMajor;
   val = moment(ticks[0].value);
   if (
-    (majorUnit === "minute" && val.second() === 0) ||
-    (majorUnit === "hour" && val.minute() === 0) ||
-    (majorUnit === "day" && val.hour() === 9) ||
-    (majorUnit === "month" && val.date() <= 3 && val.isoWeekday() === 1) ||
-    (majorUnit === "year" && val.month() === 0)
+    (majorUnit === 'minute' && val.second() === 0) ||
+    (majorUnit === 'hour' && val.minute() === 0) ||
+    (majorUnit === 'day' && val.hour() === 9) ||
+    (majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+    (majorUnit === 'year' && val.month() === 0)
   ) {
     firstTick.major = true;
   } else {
@@ -104,15 +106,15 @@ const buildTicks = (scale, ticks) => {
 const buildDefaultXAxis = () => {
   return [
     {
-      type: "time",
-      distribution: "series",
+      type: 'time',
+      distribution: 'series',
       offset: true,
       ticks: {
         major: {
           enabled: true,
-          fontStyle: "bold",
+          fontStyle: 'bold',
         },
-        source: "data",
+        source: 'data',
         autoSkip: true,
         autoSkipPadding: 75,
         maxRotation: 0,
@@ -129,21 +131,21 @@ const renameKey = (obj, newKey, oldKey) => {
 
 const dateFormat = (timestamp, scale) => {
   const dateObject = new Date(timestamp);
-  let humanDateFormat = dateObject.toLocaleString().split(",")[0]; //2019-12-9 10:30:15
+  const options = { weekday: 'short', month: 'short', day: 'numeric' };
+  let humanDateFormat = dateObject.toLocaleString().split(',')[0]; //2019-12-9 10:30:15
 
   switch (scale) {
-    case "week":
-      const options = { weekday: "short", month: "short", day: "numeric" };
-      humanDateFormat = dateObject.toLocaleDateString("en-US", options);
+    case 'week':
+      humanDateFormat = dateObject.toLocaleDateString('en-US', options);
       break;
-    case "month":
-      humanDateFormat = dateObject.toLocaleString("en-US", { month: "long" });
+    case 'month':
+      humanDateFormat = dateObject.toLocaleString('en-US', { month: 'long' });
       break;
-    case "year":
-      humanDateFormat = dateObject.toLocaleString("en-US", { year: "numeric" });
+    case 'year':
+      humanDateFormat = dateObject.toLocaleString('en-US', { year: 'numeric' });
       break;
-    case "hour":
-      humanDateFormat = dateObject.toLocaleString("en-US", { hour: "numeric" });
+    case 'hour':
+      humanDateFormat = dateObject.toLocaleString('en-US', { hour: 'numeric' });
       break;
     default:
     // humanDateFormat = dateObject.toLocaleString("en-US", { timeZoneName: "short" }); // 12/9/2019, 10:30:15 AM CST
@@ -154,21 +156,21 @@ const dateFormat = (timestamp, scale) => {
 const buildTestConfig = (datasets, height, yAxisLabel) => {
   if (!datasets) return null;
 
-  let currentDates = [];
-  let data = {};
+  const currentDates = [];
+  const data = {};
 
   datasets[0].data.forEach((item) => {
     currentDates.push(item.t);
   });
 
-  data["labels"] = currentDates;
+  data.labels = currentDates;
 
   datasets.forEach((set, index) => {
-    let key = "current";
-    let values = [];
+    let key = 'current';
+    const values = [];
     if (index !== 0) {
-      if (datasets.length === 2) key = "previous";
-      else key = "previous_" + index;
+      if (datasets.length === 2) key = 'previous';
+      else key = 'previous_' + index;
     }
     set.data.forEach((item) => {
       values.push(item.y);
@@ -182,20 +184,20 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
       labels: data.labels,
       datasets: [
         {
-          type: "line",
+          type: 'line',
           borderWidth: 3,
-          label: "Current",
+          label: 'Current',
           // lineTension: 0.5,
           pointRadius: 5,
-          pointBackgroundColor: "white",
+          pointBackgroundColor: 'white',
           data: data.current,
-          xAxisID: "x-axis-2",
+          xAxisID: 'x-axis-2',
         },
         {
-          type: "bar",
-          label: "Previous",
+          type: 'bar',
+          label: 'Previous',
           data: data.previous,
-          xAxisID: "x-axis-1",
+          xAxisID: 'x-axis-1',
         },
       ],
     },
@@ -203,36 +205,40 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
     options: {
       maintainAspectRatio: false,
       tooltips: {
-        mode: "index",
+        mode: 'index',
         intersect: true,
       },
       scales: {
         xAxes: [
           {
-            id: "x-axis-1",
+            id: 'x-axis-1',
             barThickness : data.labels.length > 7 ? 20 : 100,
-            type: "time",
+            type: 'time',
             offset: true,
             ticks: {
               autoSkip: true,
               maxTicksLimit: data.labels.length * 3,
               major: {
                 enabled: true,
-                fontStyle: "bold",
+                fontStyle: 'bold',
               },
+            },
+            scaleLabel: {
+              display: yAxisLabel ? true : false,
+              labelString: yAxisLabel ? yAxisLabel : '',
             },
             afterBuildTicks: buildTicks
           },
           {
-            id: "x-axis-2",
-            type: "time",
+            id: 'x-axis-2',
+            type: 'time',
             display: false,
             offset: true,
             ticks: {
               autoSkip: true,
               major: {
                 enabled: true,
-                fontStyle: "bold",
+                fontStyle: 'bold',
               },
             },
             afterBuildTicks: buildTicks
@@ -243,7 +249,7 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
             display: true,
             scaleLabel: {
               display: true,
-              labelString: "Total",
+              labelString: 'Total',
             },
             ticks: {
               suggestedMax: getMaxY(datasets),
@@ -258,21 +264,21 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
 const buildComparePeriodsConfig = (datasets, height, yAxisLabel, category) => {
   if (!datasets) return null;
 
-  let currentDates = [];
-  let data = {};
+  const currentDates = [];
+  const data = {};
 
   datasets[0].data.forEach((item) => {
     currentDates.push(item.t);
   });
 
-  data["labels"] = currentDates;
+  data.labels = currentDates;
 
   datasets.forEach((set, index) => {
-    let key = "current";
-    let values = [];
+    let key = 'current';
+    const values = [];
     if (index !== 0) {
-      if (datasets.length === 2) key = "previous";
-      else key = "previous_" + index;
+      if (datasets.length === 2) key = 'previous';
+      else key = 'previous_' + index;
     }
     set.data.forEach((item) => {
       values.push(item.y);
@@ -281,25 +287,25 @@ const buildComparePeriodsConfig = (datasets, height, yAxisLabel, category) => {
   });
 
   return {
-    type: "bar",
+    type: 'bar',
     height: height || 600,
     data: {
       labels: data.labels,
       datasets: [
         {
-          type: "line",
+          type: 'line',
           borderWidth: 3,
-          label: "Current",
+          label: 'Current',
           pointRadius: 5,
-          pointBackgroundColor: "white",
+          pointBackgroundColor: 'white',
           data: data.current,
-          xAxisID: "x-axis-2",
+          xAxisID: 'x-axis-2',
         },
         {
-          type: "bar",
-          label: "Previous",
+          type: 'bar',
+          label: 'Previous',
           data: data.previous,
-          xAxisID: "x-axis-1",
+          xAxisID: 'x-axis-1',
         },
       ],
     },
@@ -307,13 +313,13 @@ const buildComparePeriodsConfig = (datasets, height, yAxisLabel, category) => {
     options: {
       maintainAspectRatio: false,
       tooltips: {
-        mode: "index",
+        mode: 'index',
         intersect: true,
       },
       scales: {
         xAxes: [
           {
-            id: "x-axis-1",
+            id: 'x-axis-1',
             ticks: {
               callback: function (label) {
                 return dateFormat(label, category);
@@ -323,7 +329,7 @@ const buildComparePeriodsConfig = (datasets, height, yAxisLabel, category) => {
           {
             display: false,
             offset: true,
-            id: "x-axis-2",
+            id: 'x-axis-2',
             ticks: {
               display: false,
             },
@@ -334,7 +340,7 @@ const buildComparePeriodsConfig = (datasets, height, yAxisLabel, category) => {
             display: true,
             scaleLabel: {
               display: true,
-              labelString: "Total",
+              labelString: 'Total',
             },
             ticks: {
               suggestedMax: getMaxY(datasets),
@@ -358,20 +364,20 @@ const buildConfig = (
   datasets.forEach((set) => {
     const data = set.data;
     if (set.key) {
-      renameKey(set, "label", "key");
+      renameKey(set, 'label', 'key');
     }
     if (set.valueKey && set.timeKey) {
       data.forEach((d) => {
-        renameKey(d, "t", set.timeKey);
-        renameKey(d, "y", set.valueKey);
+        renameKey(d, 't', set.timeKey);
+        renameKey(d, 'y', set.valueKey);
       });
     } else {
       //default studio key names for time series data sets
       const keys = Object.keys(data[0]);
-      if (keys.includes("timestamp") && keys.includes("value")) {
+      if (keys.includes('timestamp') && keys.includes('value')) {
         data.forEach((d) => {
-          renameKey(d, "t", "timestamp");
-          renameKey(d, "y", "value");
+          renameKey(d, 't', 'timestamp');
+          renameKey(d, 'y', 'value');
         });
       }
     }
@@ -390,7 +396,7 @@ const buildConfig = (
       options: {
         legend: {
           labels: {
-            filter: function (item, chart) {
+            filter: function (item) {
               //remove undefined legend
               return item.text;
             },
@@ -412,23 +418,23 @@ const buildConfig = (
               },
               scaleLabel: {
                 display: yAxisLabel ? true : false,
-                labelString: yAxisLabel ? yAxisLabel : "",
+                labelString: yAxisLabel ? yAxisLabel : '',
               },
             },
           ],
         },
         annotation: {
-          drawTime: "afterDatasetsDraw",
+          drawTime: 'afterDatasetsDraw',
           annotations: buidMaxAnnotations(datasets),
         },
         tooltips: {
           intersect: false,
-          mode: "index",
+          mode: 'index',
           callbacks: {
             label: function (tooltipItem, myData) {
-              var label = myData.datasets[tooltipItem.datasetIndex].label || "";
+              let label = myData.datasets[tooltipItem.datasetIndex].label || '';
               if (label) {
-                label += ": ";
+                label += ': ';
               }
               label += parseFloat(tooltipItem.value).toFixed(2);
               return label;
@@ -443,6 +449,7 @@ const buildConfig = (
 //==================================================
 
 const StudioTimeSeriesChart = (props) => {
+  // eslint-disable-next-line no-unused-vars
   const [config, setConfig] = useState(
     buildConfig(
       props.datasets,
@@ -453,7 +460,21 @@ const StudioTimeSeriesChart = (props) => {
     )
   );
 
+  StudioTimeSeriesChart.propTypes = {
+    height: PropTypes.PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
+    datasets: PropTypes.arrayOf(PropTypes.object),
+    yAxisLabel: PropTypes.string,
+    comparePeriods: PropTypes.bool,
+    category: PropTypes.string,
+    config: PropTypes.object
+  };
+
+  /* jshint ignore:start */
   return <StudioChart config={config ? config : props.config} />;
+  /* jshint ignore:end */
 };
 
 export default StudioTimeSeriesChart;
