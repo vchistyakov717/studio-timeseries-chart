@@ -1,12 +1,21 @@
 /*jshint esversion: 6 */
 import React, { useState } from 'react';
 import moment from 'moment';
+import { isValid, parseISO } from 'date-fns';
 import 'chartjs-plugin-annotation';
 import deepcopy from 'deepcopy';
 import PropTypes from 'prop-types';
 
 import StudioChart from './StudioChart';
 import './plugins/autoConfigPlugin';
+
+function parseTime(t) {
+  var d = new Date();
+  var time = t.match(/(\d+)(?::(\d\d))?\s*(p?)/);
+  d.setHours(parseInt(time[1]) + (time[3] ? 12 : 0));
+  d.setMinutes(parseInt(time[2]) || 0);
+  return d;
+}
 
 const getMaxY = (datasets) => {
   let globalMax = null;
@@ -37,23 +46,44 @@ const buidMaxAnnotations = (datasets) => {
   const colors = [];
 
   datasets.forEach((set) => {
-    let length = 1;
-    if (!set.showMaxLine) return;
-    //deep copy dataset object
-    const set_copy = deepcopy(set);
-    //sort data array
-    set_copy.data.sort((a, b) => (parseFloat(a.y) < parseFloat(b.y) ? 1 : -1));
-    const highest = set_copy.data[0];
-    //count dataset objects with max y value
-    for (let i = 1; i < set_copy.data.length; i++) {
-      if (parseFloat(set_copy.data[i].y) === parseFloat(highest.y)) length++;
-      else break;
-    }
-    //populate annotation arrays
-    for (let j = 0; j < length; j++) {
-      dates.push(set_copy.data[j].t);
-      values.push(parseFloat(set_copy.data[j].y));
-      colors.push(set_copy.borderColor ? set_copy.borderColor : set_copy.color);
+    if (set.showMaxLine) {
+      let max = Math.max.apply(
+        Math,
+        set.data.map(function (o) {
+          return o.y;
+        })
+      );
+      let keys = [];
+      let last = null;
+
+      //search max values with plato detection if any
+      let platoEndIds = [];
+      for (let i = 0; i < set.data.length; i++) {
+        if (max === JSON.parse(set.data[i].y) && i !== 0) {
+          if (keys.length === 0) {       
+            keys.push(i);
+            last = i;
+          } else {
+            const key = keys[keys.length - 1];
+            if (i !== last + 1) {
+              keys.push(i);
+            } else if (set.data[i].y !== set.data[i + 1].y) {
+              platoEndIds.push(i);
+            }
+            last = i;
+          }
+        }
+      }
+
+      //add plato end indexes and remove duplicates
+      keys = Array.from(new Set(keys.concat(platoEndIds)));
+
+      for (let j = 0; j < keys.length; j++) {
+        const k = keys[j];
+        dates.push(set.data[k].t);
+        values.push(parseFloat(set.data[k].y));
+        colors.push(set.borderColor ? set.borderColor : set.color);
+      }
     }
   });
 
@@ -212,7 +242,7 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
         xAxes: [
           {
             id: 'x-axis-1',
-            barThickness : data.labels.length > 7 ? 20 : 100,
+            barThickness: data.labels.length > 7 ? 20 : 100,
             type: 'time',
             offset: true,
             ticks: {
@@ -227,7 +257,7 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
               display: yAxisLabel ? true : false,
               labelString: yAxisLabel ? yAxisLabel : '',
             },
-            afterBuildTicks: buildTicks
+            afterBuildTicks: buildTicks,
           },
           {
             id: 'x-axis-2',
@@ -241,7 +271,7 @@ const buildTestConfig = (datasets, height, yAxisLabel) => {
                 fontStyle: 'bold',
               },
             },
-            afterBuildTicks: buildTicks
+            afterBuildTicks: buildTicks,
           },
         ],
         yAxes: [
@@ -361,8 +391,11 @@ const buildConfig = (
 ) => {
   if (!datasets) return null;
 
-  datasets.forEach((set) => {
-    const data = set.data;
+  let datasets_copy = deepcopy(datasets);
+
+  //rename custom key names to default ones
+  datasets_copy.forEach((set) => {
+    let data = set.data;
     if (set.key) {
       renameKey(set, 'label', 'key');
     }
@@ -383,15 +416,32 @@ const buildConfig = (
     }
   });
 
+  // validate timestamp values
+  datasets_copy.forEach((set) => {
+    let data = set.data;
+    data.forEach((d) => {
+      const valid = isValid(new Date(d.t));
+      if (!valid) {
+        // console.log(d.t.padStart( 9, ' ' ) + " = " + parseTime(d.t) + " : " + valid + ", " + parseTime(d.t).getTime());
+        d.t = parseTime(d.t).getTime();
+      }
+    });
+  });
+
   if (comparePeriods) {
     if (category)
-      return buildComparePeriodsConfig(datasets, height, yAxisLabel, category);
+      return buildComparePeriodsConfig(
+        datasets_copy,
+        height,
+        yAxisLabel,
+        category
+      );
     else return buildTestConfig(datasets, height, yAxisLabel);
   } else {
     return {
       height: height || 600,
       data: {
-        datasets: datasets,
+        datasets: datasets_copy,
       },
       options: {
         legend: {
@@ -411,7 +461,7 @@ const buildConfig = (
           yAxes: [
             {
               ticks: {
-                suggestedMax: getMaxY(datasets),
+                suggestedMax: getMaxY(datasets_copy),
               },
               gridLines: {
                 drawBorder: false,
@@ -425,7 +475,7 @@ const buildConfig = (
         },
         annotation: {
           drawTime: 'afterDatasetsDraw',
-          annotations: buidMaxAnnotations(datasets),
+          annotations: buidMaxAnnotations(datasets_copy),
         },
         tooltips: {
           intersect: false,
@@ -461,15 +511,12 @@ const StudioTimeSeriesChart = (props) => {
   );
 
   StudioTimeSeriesChart.propTypes = {
-    height: PropTypes.PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    height: PropTypes.PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     datasets: PropTypes.arrayOf(PropTypes.object),
     yAxisLabel: PropTypes.string,
     comparePeriods: PropTypes.bool,
     category: PropTypes.string,
-    config: PropTypes.object
+    config: PropTypes.object,
   };
 
   /* jshint ignore:start */

@@ -9,6 +9,7 @@ class Example_01 extends React.Component {
     const datasets = [
       {
         label: 'Navy Light',
+        showMaxLine: true,
         data: generateData(40, 'Jan 01 1990'),
       },
       {
@@ -27,6 +28,8 @@ class Example_01 extends React.Component {
         data: generateData(1, 'Jan 01 1990'),
       },
     ];
+
+    console.log(JSON.stringify(datasets,null,2));
     /* jshint ignore:start */
     return (
       <Fragment>
